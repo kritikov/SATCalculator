@@ -754,7 +754,7 @@
                                                 </Style>
                                             </DataGrid.Resources>
                                             <DataGrid.Columns>
-                                                <DataGridTemplateColumn Header="steps" Width="*">
+                                                <DataGridTemplateColumn Header="steps" Width="*" MinWidth="400">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <DataTemplate.Resources>
