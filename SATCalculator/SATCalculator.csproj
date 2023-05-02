@@ -6183,5 +6183,8 @@
   <ItemGroup>
     <Resource Include="logo3.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Samples\SAT2 formulas\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
