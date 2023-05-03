@@ -161,6 +161,9 @@
     <None Include="Resources\Samples\SAT2 formulas\test 3.cnf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\Samples\SAT2 formulas\test 4.cnf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Samples\SAT3 formulas\with solution\uf20-01.cnf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
