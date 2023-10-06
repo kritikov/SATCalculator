@@ -292,20 +292,20 @@ namespace SATCalculator.Classes
 
                         DataRow row = analysisResults.ConflictsTable.Rows[rowIndex];
                         row[columnIndex] = "x";
-                        if (positiveAppearance.Sign == Sign.Negative)
-                            row[columnIndex - 1] = "v";
-                        else
-                            row[columnIndex + 1] = "v";
+                        //if (positiveAppearance.Sign == Sign.Negative)
+                        //    row[columnIndex - 1] = "v";
+                        //else
+                        //    row[columnIndex + 1] = "v";
 
                         // backward
                         int rowIndex2 = columnIndex - 1;
                         int columnIndex2 = rowIndex + 1;
                         row = analysisResults.ConflictsTable.Rows[rowIndex2];
                         row[columnIndex2] = "x";
-                        if (negativeAppearance.Sign == Sign.Negative)
-                            row[columnIndex2 - 1] = "v";
-                        else
-                            row[columnIndex2 + 1] = "v";
+                        //if (negativeAppearance.Sign == Sign.Negative)
+                        //    row[columnIndex2 - 1] = "v";
+                        //else
+                        //    row[columnIndex2 + 1] = "v";
                     }
                 }
             }

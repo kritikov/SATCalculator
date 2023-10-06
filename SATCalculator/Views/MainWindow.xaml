@@ -743,7 +743,7 @@
 
                                 <TabControl Grid.Column="2">
                                     <TabItem Header="flow">
-                                        <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding AlgorithmFlowView}" >
+                                        <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding AlgorithmFlowView}" ScrollViewer.CanContentScroll="False">
                                             <DataGrid.Resources>
                                                 <Style TargetType="{x:Type DataGridCell}">
                                                     <Style.Triggers>
