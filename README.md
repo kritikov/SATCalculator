@@ -7,6 +7,8 @@ SAT calculator is an open souce editor for SAT formulas. It currently provides:
 - Resolution of selected clauses
 - Several samples of allready existing formulas that can be resolved or not
 
+The SAT calculator is developed using WPF and .NET Framework 4.7.2 for Windows 10 and later.
+
 <img width="1267" height="856" alt="image" src="https://github.com/user-attachments/assets/099a9cb3-01e1-46a3-be15-71997b785830" />
 
 <img width="1267" height="856" alt="image" src="https://github.com/user-attachments/assets/768590b5-752d-4d21-82f6-934709e109df" />
