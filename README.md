@@ -9,11 +9,11 @@ SAT calculator is an open souce editor for SAT formulas. It currently provides:
 
 The SAT calculator is developed using WPF and .NET Framework 4.7.2 for Windows 10 and later.
 
-<img width="1267" height="856" alt="image" src="https://github.com/user-attachments/assets/099a9cb3-01e1-46a3-be15-71997b785830" />
+<img width="1281" height="872" alt="image" src="https://github.com/user-attachments/assets/555094a0-4ef5-4345-ae81-0f7c9bcf72c0" />
 
-<img width="1267" height="856" alt="image" src="https://github.com/user-attachments/assets/768590b5-752d-4d21-82f6-934709e109df" />
+<img width="1272" height="868" alt="image" src="https://github.com/user-attachments/assets/1c1244e8-e6ac-4283-84c8-e653ac9c9a23" />
 
-<img width="1264" height="859" alt="image" src="https://github.com/user-attachments/assets/b8aed1be-561c-41f9-800b-c7d23bc81c57" />
+<img width="1272" height="871" alt="image" src="https://github.com/user-attachments/assets/d19ad82e-242d-4a5f-b952-b5696b1ef443" />
 
-<img width="1265" height="855" alt="image" src="https://github.com/user-attachments/assets/bad0e875-08cb-41f3-9fc9-ce818a747a74" />
+<img width="1277" height="867" alt="image" src="https://github.com/user-attachments/assets/cfa46285-c3f5-47ee-aaab-ac5ab1443339" />
 
