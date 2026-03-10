@@ -1,57 +1,53 @@
-﻿using SATCalculator.Classes;
+﻿using SATCalculator.Core;
+using SATCalculator.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using static SATCalculator.Views.MainWindow;
 
 namespace SATCalculator.Views
 {
+    public class LiteralData
+    {
+        public Sign Sign { get; set; } = Sign.Positive;
+        public string Prefix { get; set; } = Variable.DefaultVariableName;
+
+        public int CnfIndex { get; set; } = 1;
+
+        public LiteralData()
+        {
+
+        }
+
+        public LiteralData(Sign sign, string prefix, int cnfIndex) : base()
+        {
+            Sign = sign;
+            Prefix = prefix;
+            CnfIndex = cnfIndex;
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object, indicating its sign and index as cnf format
+        /// </summary>
+        public override string ToString()
+        {
+            string value = Sign == Sign.Positive ? "+" : "-";
+            value += CnfIndex.ToString();
+
+            return value;
+        }
+    }
+
     /// <summary>
     /// Interaction logic for NewClauseWindow.xaml
     /// </summary>
-    public partial class NewClauseWindow : Window, INotifyPropertyChanged
+    public partial class ClauseEditorWindow : Window, INotifyPropertyChanged
     {
         #region VARIABLES AND NESTED CLASSES
-
-        public class LiteralCreation
-        {
-            public Sign Sign { get; set; } = Sign.Positive;
-            public string Prefix { get; set; } = Variable.DefaultVariableName;
-
-            public int CnfIndex { get; set; } = 1;
-
-            public LiteralCreation()
-            {
-
-            }
-
-            public LiteralCreation(Sign sign, string prefix, int cnfIndex) : base()
-            {
-                Sign = sign;
-                Prefix = prefix;
-                CnfIndex = cnfIndex;
-            }
-
-            public override string ToString()
-            {
-                string value = Sign == Sign.Positive ? "+" : "-";
-                value += CnfIndex.ToString();
-
-                return value;
-            }
-        }
 
         public class SignValue
         {
@@ -76,7 +72,7 @@ namespace SATCalculator.Views
             }
         }
 
-        public ObservableCollection<LiteralCreation> LiteralsList { get; set; } = new ObservableCollection<LiteralCreation>();
+        public ObservableCollection<LiteralData> LiteralsList { get; set; } = new ObservableCollection<LiteralData>();
 
         private readonly CollectionViewSource literalsListSource = new CollectionViewSource();
         public ICollectionView LiteralsListView
@@ -87,26 +83,39 @@ namespace SATCalculator.Views
             }
         }
 
-        public List<string> Literals { get; set; } = new List<string>();
+        public List<string> LiteralsCnf { get; set; } = new List<string>();
         
         #endregion
 
 
         #region CONSTRUCTORS
 
-        public NewClauseWindow()
+        public ClauseEditorWindow()
         {
             InitializeComponent();
             DataContext = this;
 
-            LiteralsList = new ObservableCollection<LiteralCreation>();
-            //LiteralsList.Add(new LiteralCreation(Sign.Negative, Variable.DefaultVariableName, 1));
-            //LiteralsList.Add(new LiteralCreation(Sign.Positive, Variable.DefaultVariableName, 2));
-            //LiteralsList.Add(new LiteralCreation(Sign.Negative, Variable.DefaultVariableName, 3));
+            LiteralsList = new ObservableCollection<LiteralData>();
 
             literalsListSource.Source = LiteralsList;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LiteralsListView"));
         }
+
+        public ClauseEditorWindow(Clause clause)
+        {
+            InitializeComponent();
+            DataContext = this;
+
+            LiteralsList = new ObservableCollection<LiteralData>();
+            foreach (var literal in clause.Literals)
+            {
+                LiteralsList.Add(new LiteralData(literal.Sign, Variable.DefaultVariableName, literal.Variable.CnfIndex));
+            }
+
+            literalsListSource.Source = LiteralsList;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LiteralsListView"));
+        }
+
 
         #endregion
 
@@ -135,12 +144,11 @@ namespace SATCalculator.Views
             try
             {
                 Message = "";
-                var literal = LiteralsListView.CurrentItem as LiteralCreation;
+                var literal = LiteralsListView.CurrentItem as LiteralData;
                 RemoveLiteral(literal);
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
 
@@ -159,7 +167,6 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -177,7 +184,6 @@ namespace SATCalculator.Views
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -189,39 +195,18 @@ namespace SATCalculator.Views
 
         private void AddLiteral()
         {
-            try
-            {
-                LiteralsList.Add(new LiteralCreation());
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            LiteralsList.Add(new LiteralData());
         }
 
-        private void RemoveLiteral(LiteralCreation literal)
+        private void RemoveLiteral(LiteralData literal)
         {
-            try
-            {
-                LiteralsList.Remove(literal);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            LiteralsList.Remove(literal);
         }
 
         private void CreateClause()
         {
-            try
-            {
-                Literals = LiteralsList.Select(p => p.ToString()).Distinct().ToList();
-                Close();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            LiteralsCnf = LiteralsList.Select(p => p.ToString()).Distinct().ToList();
+            Close();
         }
 
         #endregion

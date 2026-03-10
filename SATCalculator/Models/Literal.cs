@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SATCalculator.Core;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SATCalculator.Classes
+namespace SATCalculator.Models
 {
-    public class Literal : INotifyPropertyChanged
+    public class Literal
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         #region Fields
 
-        public Variable Variable { get; set; } = new Variable();
+        public Variable Variable { get; set; }
         public Sign Sign { get; set; }
         public string SignToString { get
             {
@@ -49,7 +42,7 @@ namespace SATCalculator.Classes
         {
             get
             {
-                if (Variable == null || Variable?.Valuation == ValuationEnum.Null)
+                if (Variable == null || Variable.Valuation == ValuationEnum.Null)
                     return ValuationEnum.Null;
 
                 // if literal is positive
@@ -97,6 +90,23 @@ namespace SATCalculator.Classes
         public override string ToString()
         {
             return Name;
+        }
+
+        /// <summary>
+        /// Inform the literal that a clause contains it
+        /// </summary>
+        public void RegisterClause(Clause clause)
+        {
+            if (!ClausesContainingIt.Contains(clause))
+                ClausesContainingIt.Add(clause);
+        }
+
+        /// <summary>
+        /// Unmark a clause as container from this literal
+        /// </summary>
+        public void UnregisterClause(Clause clause)
+        {
+            ClausesContainingIt.Remove(clause);
         }
 
         #endregion

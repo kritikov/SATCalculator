@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SATCalculator.Core;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SATCalculator.Classes
+namespace SATCalculator.Models
 {
-    public class Solution
+    public class FormulaSolution
     {
         public ObservableCollection<VariableValuation> ValuationsList { get; set; } = new ObservableCollection<VariableValuation>();
 

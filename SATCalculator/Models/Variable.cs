@@ -1,16 +1,14 @@
-﻿using SATCalculator.Classes;
+﻿using SATCalculator.Core;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SATCalculator.Classes
+namespace SATCalculator.Models
 {
     public class Variable : INotifyPropertyChanged
     {
+        public static Variable FixedVariable = new Variable("FIXED");
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         #region Fields
@@ -53,17 +51,10 @@ namespace SATCalculator.Classes
         public int References => ClausesWithPositiveReferencesCount + ClausesWithNegativeReferencesCount;
         public int Contrasts => Math.Min(ClausesWithPositiveReferencesCount, ClausesWithNegativeReferencesCount);
 
-        public static Variable FixedVariable = new Variable("FIXED");
-
         #endregion
 
 
         #region Constructors
-
-        public Variable()
-        {
-            
-        }
 
         public Variable(string value) : base()
         {
@@ -86,9 +77,9 @@ namespace SATCalculator.Classes
                     CnfIndex = Convert.ToInt32(numbers);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Logs.Write(ex.Message);
+                throw;
             }
         }
 

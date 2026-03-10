@@ -4,10 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SATCalculator.Views"
-        xmlns:Converters="clr-namespace:SATCalculator.Classes"
-        xmlns:Commands="clr-namespace:SATCalculator.Classes"
+        xmlns:Converters="clr-namespace:SATCalculator.Core"
+        xmlns:Commands="clr-namespace:SATCalculator.Core"
         mc:Ignorable="d"
-        Title="SAT calculator" Height="694" Width="1150" WindowStartupLocation="CenterScreen">
+        Title="SAT calculator" Height="694" Width="1026" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Converters:ValuationToColor x:Key="ValuationToColor"/>
@@ -34,6 +34,10 @@
             Command="Commands:Commands.Add"
             CanExecute="AddClause_CanExecute"
             Executed="AddClause_Executed" />
+        <CommandBinding
+            Command="Commands:Commands.Edit"
+            CanExecute="EditClause_CanExecute"
+            Executed="EditClause_Executed" />
         <CommandBinding
             Command="Commands:Commands.Reset"
             CanExecute="ResetFormula_CanExecute"
@@ -65,7 +69,6 @@
                 <Separator />
                 <MenuItem Header="_Exit" Click="ExitProgram"/>
             </MenuItem>
-            <MenuItem Header="_About" Click="DisplayAbout"/>
         </Menu>
 
         <Grid DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Margin="5, 4, 4, 8">
@@ -96,6 +99,9 @@
                 </Grid.RowDefinitions>
                 
                 <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding ClausesView}">
+                    <DataGrid.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick" Command="Commands:Commands.Edit" />
+                    </DataGrid.InputBindings>
                     <DataGrid.Columns>
                         <DataGridTextColumn Width="*" Binding="{Binding Name}" IsReadOnly="True" SortMemberPath="Name">
                             <DataGridTextColumn.Header>
@@ -106,10 +112,10 @@
                 </DataGrid>
 
                 <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
-                    <Button Content="New" Width="55" Command="Commands:Commands.NewFormula" ToolTip="Create a new formula"/>
-                    <Button Content="Load" Width="55" Command="Commands:Commands.LoadFormula" ToolTip="Load an existing formula"/>
-                    <Button Content="Save" Width="55" Command="Commands:Commands.SaveFormula" ToolTip="Save the formula in cnf form"/>
-                    <Button Content="Reset" Width="55" Command="Commands:Commands.Reset" ToolTip="Reset all the changes and bring back the original formula"/>
+                    <Button Content="Add" Width="50" Command="Commands:Commands.Add" ToolTip="Add a clause to the formula"/>
+                    <Button Content="Edit" Width="50" Command="Commands:Commands.Edit" ToolTip="Edit the selected clause"/>
+                    <Button Content="Delete" Width="60" Command="Commands:Commands.Remove" ToolTip="Delete the selected clause from the formula"/>
+                    <Button Content="Reset formula" Width="55" Command="Commands:Commands.Reset" ToolTip="Reset all the changes and bring back the original formula"/>
                 </WrapPanel>
             </Grid>
 
@@ -344,14 +350,112 @@
                                                 </DataGridTextColumn>
                                             </DataGrid.Columns>
                                         </DataGrid>
-
-                                        <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
-                                            <Button Content="Add" Width="60" Command="Commands:Commands.Add" ToolTip="Add a clause to the formula"/>
-                                            <Button Content="Delete" Width="60" Command="Commands:Commands.Remove" ToolTip="Delete the selected clause from the formula"/>
-                                        </WrapPanel>
                                     </Grid>
                                 </Grid>
                             </DockPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <TabItem Header="Solver">
+                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <DataGrid 
+                      Style="{StaticResource DataGridStyle}"
+                      ItemsSource="{Binding SolverSolutionsView}"
+                SelectionChanged="SolverSelectedSolutionChanged">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Width="*" MinWidth="400" Binding="{Binding DisplayValue}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="solutions" ToolTip="The valuations that solves the formula"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Solve" Command="Commands:Commands.Solve" ToolTip="Find the valuations that solve the formula"/>
+                                        <Button Content="Stop" Command="Commands:Commands.StopProcess" ToolTip="Stop the process when searching for valuations"/>
+                                    </WrapPanel>
+                                </Grid>
+
+                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+                                <Grid Grid.Row="0" Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <DataGrid Style="{StaticResource DataGridStyle}" ItemsSource="{Binding SolverSelectedSolutionView}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="solution" ToolTip="Analysis of the selected valuation that solves the formula"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Apply to formula" Command="Commands:Commands.ApplyToFormula" ToolTip="Apply the selected valuation to the variables of the formula"/>
+                                    </WrapPanel>
+                                </Grid>
+
+                                <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
+
+                                <Grid Grid.Row="0" Grid.Column="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="30"/>
+                                    </Grid.RowDefinitions>
+
+                                    <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding SolverStatisticsView}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="statistics" ToolTip="Statistics"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style>
+                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+
+                                <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch"/>
+
+                            </Grid>
+
                         </ScrollViewer>
                     </TabItem>
 
@@ -438,7 +542,8 @@
                                     </DataGrid>
                                 </Grid>
 
-                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+                                <!-- 
+                               <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
 
                                 <Grid Grid.Column="2">
                                     <Grid.RowDefinitions>
@@ -465,6 +570,7 @@
                                 </Grid>
 
                                 <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
+                                -->
 
                                 <Grid Grid.Column="4">
                                     <Grid.RowDefinitions>
@@ -539,9 +645,9 @@
                                     </DataGrid>
 
                                     <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
-                                        <Button Content="Resolution" Click="ResolutionResolutionSelectedClauses" ToolTip="Resolution the selected clauses"/>
                                         <Button Content="Test all" Click="ResolutionResolutionAllClausesTest" ToolTip="Test resolution off all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
-                                        <Button Content="Resolution all" Click="ResolutionResolutionAllClauses" ToolTip="Resolution all clauses. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
+                                        <Button Content="Resolve selected" Click="ResolutionResolutionSelectedClauses" ToolTip="Resolve the selected clauses"/>
+                                        <Button Content="Resolve all" Click="ResolutionResolutionAllClauses" ToolTip="Resolve all clauses of the variable and update the formula. Every resolution applies in a clause in the positive list with its corresponding clause of the same position in the negatives list"/>
                                     </StackPanel>
                                 </Grid>
 
@@ -551,118 +657,60 @@
                         </ScrollViewer>
                     </TabItem>
 
-                    <TabItem Header="Solver">
-                        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                    <TabItem Header="About">
 
-                                <Grid Grid.Row="0" Grid.Column="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="auto"/>
-                                    </Grid.RowDefinitions>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Grid Margin="20">
 
-                                    <DataGrid 
-                                          Style="{StaticResource DataGridStyle}"
-                                          ItemsSource="{Binding SolverSolutionsView}"
-                                    SelectionChanged="SolverSelectedSolutionChanged">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Width="*" MinWidth="400" Binding="{Binding DisplayValue}" IsReadOnly="True">
-                                                <DataGridTextColumn.Header>
-                                                    <TextBlock Text="solutions" ToolTip="The valuations that solves the formula"/>
-                                                </DataGridTextColumn.Header>
-                                                <DataGridTextColumn.ElementStyle>
-                                                    <Style>
-                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                    </Style>
-                                                </DataGridTextColumn.ElementStyle>
-                                            </DataGridTextColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                <StackPanel>
+                                    <TextBlock Text="SAT Calculator" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                                    <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Button Content="Solve" Command="Commands:Commands.Solve" ToolTip="Find the valuations that solve the formula"/>
-                                        <Button Content="Stop" Command="Commands:Commands.StopProcess" ToolTip="Stop the process when searching for valuations"/>
-                                    </WrapPanel>
-                                </Grid>
+                                    <TextBlock TextWrapping="Wrap" Margin="0,0,0,15">
+                                        SAT Calculator is an open source editor for SAT formulas.
+                                        It is built with WPF and C# and provides several tools
+                                        for studying SAT formulas and experimenting with
+                                        satisfiability problems.
+                                    </TextBlock>
 
-                                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <TextBlock Text="GitHub: " FontWeight="Bold"/>
+                                        <TextBlock>
+                                            <Hyperlink NavigateUri="https://github.com/kritikov/SATCalculator-released"
+                                                       RequestNavigate="Hyperlink_RequestNavigate">
+                                                github.com/kritikov/SATCalculator
+                                            </Hyperlink>
+                                        </TextBlock>
+                                    </StackPanel>
 
-                                <Grid Grid.Row="0" Grid.Column="2">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="auto"/>
-                                    </Grid.RowDefinitions>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <TextBlock Text="Licence: " FontWeight="Bold"/>
+                                        <TextBlock Text="MIT licence"/>
+                                    </StackPanel>
 
-                                    <DataGrid Style="{StaticResource DataGridStyle}" ItemsSource="{Binding SolverSelectedSolutionView}">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
-                                                <DataGridTextColumn.Header>
-                                                    <TextBlock Text="solution" ToolTip="Analysis of the selected valuation that solves the formula"/>
-                                                </DataGridTextColumn.Header>
-                                                <DataGridTextColumn.ElementStyle>
-                                                    <Style>
-                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                    </Style>
-                                                </DataGridTextColumn.ElementStyle>
-                                            </DataGridTextColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <TextBlock Text="Version: " FontWeight="Bold"/>
+                                        <TextBlock Text="1.1.0"/>
+                                    </StackPanel>
 
-                                    <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Button Content="Apply to formula" Command="Commands:Commands.ApplyToFormula" ToolTip="Apply the selected valuation to the variables of the formula"/>
-                                    </WrapPanel>
-                                </Grid>
+                                    <Separator Margin="0,10"/>
 
-                                <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
+                                    <TextBlock>
+                                        <Run Text="Developed by "/>
+                                        <Run Text="Nick Kritikou" FontWeight="Bold"/>
+                                    </TextBlock>
+                                    
+                                    <TextBlock>
+                                        <Run Text="visit me at"/>
+                                        <Hyperlink NavigateUri="https://nkode.gr/EN" RequestNavigate="Hyperlink_RequestNavigate">
+                                            nkode.gr
+                                        </Hyperlink>
+                                    </TextBlock>
 
-                                <Grid Grid.Row="0" Grid.Column="4">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="30"/>
-                                    </Grid.RowDefinitions>
-
-                                    <DataGrid Grid.Row="0" Style="{StaticResource DataGridStyle}" ItemsSource="{Binding SolverStatisticsView}">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Width="*" MinWidth="150" Binding="{Binding DisplayValue}" IsReadOnly="True">
-                                                <DataGridTextColumn.Header>
-                                                    <TextBlock Text="statistics" ToolTip="Statistics"/>
-                                                </DataGridTextColumn.Header>
-                                                <DataGridTextColumn.ElementStyle>
-                                                    <Style>
-                                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
-                                                    </Style>
-                                                </DataGridTextColumn.ElementStyle>
-                                            </DataGridTextColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-
-                                    <GroupBox Grid.Row="1" Header="Options" Margin="0">
-                                        <StackPanel Orientation="Vertical">
-                                            <CheckBox Content="Update progress" IsChecked="{Binding SolverUpdateMessage}" FlowDirection="LeftToRight" 
-                                                  ToolTip="Update the message area with the progress while searching for a solutions. Uncheck it for faster results."/>
-                                        </StackPanel>
-                                    </GroupBox>
-                                </Grid>
-
-                                <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
 
                             </Grid>
-
                         </ScrollViewer>
-                    </TabItem>
-                    
-                    <TabItem Header="Logs">
-                        <ListBox ItemsSource="{Binding LogsView}"/>
+
                     </TabItem>
 
                 </TabControl>

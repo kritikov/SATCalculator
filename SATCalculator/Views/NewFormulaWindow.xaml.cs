@@ -1,18 +1,9 @@
-﻿using SATCalculator.Classes;
+﻿using SATCalculator.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace SATCalculator
 {
@@ -137,7 +128,6 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -152,7 +142,6 @@ namespace SATCalculator
             }
             catch (Exception ex)
             {
-                Logs.Write(ex.Message);
                 Message = ex.Message;
             }
         }
@@ -176,18 +165,11 @@ namespace SATCalculator
         /// <returns></returns>
         private bool AndSymbolIsValid(string value)
         {
-            try
-            {
-                if (value == OrSymbol)
-                    throw new Exception("The And symbol cannot be the same as the Or symbol");
+            if (value == OrSymbol)
+                throw new Exception("The And symbol cannot be the same as the Or symbol");
 
-                if (value == String.Empty)
-                    throw new Exception("The And symbol cannot be empty");
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            if (value == String.Empty)
+                throw new Exception("The And symbol cannot be empty");
 
             return true;
         }
@@ -199,18 +181,11 @@ namespace SATCalculator
         /// <returns></returns>
         private bool OrSymbolIsValid(string value)
         {
-            try
-            {
-                if (value == AndSymbol)
-                    throw new Exception("The Or symbol cannot be the same as the And symbol");
+            if (value == AndSymbol)
+                throw new Exception("The Or symbol cannot be the same as the And symbol");
 
-                if (value == String.Empty)
-                    throw new Exception("The Or symbol cannot be empty");
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            if (value == String.Empty)
+                throw new Exception("The Or symbol cannot be empty");
 
             return true;
         }
@@ -222,18 +197,11 @@ namespace SATCalculator
         /// <returns></returns>
         private bool MinusSymbolIsValid(string value)
         {
-            try
-            {
-                if (value == String.Empty)
-                    throw new Exception("The Or symbol cannot be empty");
+            if (value == String.Empty)
+                throw new Exception("The Or symbol cannot be empty");
 
-                if (value.Length != 1)
-                    throw new Exception("The Minus symbol has not proped length");
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            if (value.Length != 1)
+                throw new Exception("The Minus symbol has not proped length");
 
             return true;
         }
@@ -245,23 +213,16 @@ namespace SATCalculator
         /// <returns></returns>
         private bool FormulaIsValid(string formula)
         {
-            try
+            if (formula == string.Empty)
             {
-                if (formula == string.Empty)
-                {
-                    throw new Exception("The Or symbol cannot be empty");
-                }
-
-                int leftParenthesisCount = formula.Count(f => (f == '('));
-                int rightParenthesisCount = formula.Count(f => (f == ')'));
-                if (leftParenthesisCount != rightParenthesisCount)
-                {
-                    throw new Exception("Some parenthesis are missing");
-                }
+                throw new Exception("The Or symbol cannot be empty");
             }
-            catch(Exception ex)
+
+            int leftParenthesisCount = formula.Count(f => (f == '('));
+            int rightParenthesisCount = formula.Count(f => (f == ')'));
+            if (leftParenthesisCount != rightParenthesisCount)
             {
-                throw ex;
+                throw new Exception("Some parenthesis are missing");
             }
 
             return true;
@@ -278,93 +239,86 @@ namespace SATCalculator
             Dictionary<string, int> variables = new Dictionary<string, int>();
             int cnfIndex = 0;
 
-            try
+            // create the clauses
+            var clausesArray = formula.Split(new string[] { AndSymbol }, StringSplitOptions.None);
+
+            // edit each clause
+            foreach (var clause in clausesArray)
             {
-                // create the clauses
-                var clausesArray = formula.Split(new string[] { AndSymbol }, StringSplitOptions.None);
+                // clear all parenthesis end empty spaces
+                string clauseFormatted = clause.Replace(" ", "");
+                clauseFormatted = clauseFormatted.Replace("(", "");
+                clauseFormatted = clauseFormatted.Replace(")", "");
 
-                // edit each clause
-                foreach (var clause in clausesArray)
+                if (clauseFormatted == string.Empty)
+                    continue;
+
+                // create the literals of the clause
+                var literals = clauseFormatted.Split(new string[] { OrSymbol }, StringSplitOptions.None).ToList();
+                List<Literal> LiteralNames = new List<Literal>();
+
+                // rename the literals to a valid number
+                foreach (var literal in literals)
                 {
-                    // clear all parenthesis end empty spaces
-                    string clauseFormatted = clause.Replace(" ", "");
-                    clauseFormatted = clauseFormatted.Replace("(", "");
-                    clauseFormatted = clauseFormatted.Replace(")", "");
+                    string variableName;
+                    Literal literalName;
+                    string sign = "";
 
-                    if (clauseFormatted == string.Empty)
-                        continue;
-
-                    // create the literals of the clause
-                    var literals = clauseFormatted.Split(new string[] { OrSymbol }, StringSplitOptions.None).ToList();
-                    List<Literal> LiteralNames = new List<Literal>();
-
-                    // rename the literals to a valid number
-                    foreach (var literal in literals)
+                    // get the sign and the variable name
+                    if (literal.StartsWith("+"))
                     {
-                        string variableName;
-                        Literal literalName;
-                        string sign = "";
+                        if (literal.Length == 1)
+                            throw new Exception($"the name of the literal {literal} in clause {clause} cannot be resolved");
+                        else
+                            variableName = literal.Substring(1, literal.Length - 1);
 
-                        // get the sign and the variable name
-                        if (literal.StartsWith("+"))
-                        {
-                            if (literal.Length == 1)
-                                throw new Exception($"the name of the literal {literal} in clause {clause} cannot be resolved");
-                            else
-                                variableName = literal.Substring(1, literal.Length - 1);
-
-                        }
-                        else if (literal.StartsWith(MinusSymbol))
-                        {
-                            if (literal.Length == 1)
-                                throw new Exception($"the name of the literal {literal} in clause {clause} cannot be resolved");
-                            else
-                            {
-                                sign = MinusSymbolOriginal;
-                                variableName = literal.Substring(1, literal.Length - 1);
-                            }
-                        }
+                    }
+                    else if (literal.StartsWith(MinusSymbol))
+                    {
+                        if (literal.Length == 1)
+                            throw new Exception($"the name of the literal {literal} in clause {clause} cannot be resolved");
                         else
                         {
-                            if (literal.Length == 0)
-                                throw new Exception($"the name of the literal {literal} in clause {clause} cannot be resolved");
-                            else
-                                variableName = literal;
+                            sign = MinusSymbolOriginal;
+                            variableName = literal.Substring(1, literal.Length - 1);
                         }
-
-                        // create a variable name based on cnf indexes
-                        if (variables.ContainsKey(variableName))
-                        {
-                            literalName = new Literal()
-                            {
-                                CnfIndex = variables[variableName],
-                                Sign = sign
-                            };
-                        }
+                    }
+                    else
+                    {
+                        if (literal.Length == 0)
+                            throw new Exception($"the name of the literal {literal} in clause {clause} cannot be resolved");
                         else
-                        {
-                            variables[variableName] = ++cnfIndex;
-
-                            literalName = new Literal()
-                            {
-                                CnfIndex = cnfIndex,
-                                Sign = sign
-                            };
-                        }
-
-                        // add the literal to the list
-                        LiteralNames.Add(literalName);
+                            variableName = literal;
                     }
 
+                    // create a variable name based on cnf indexes
+                    if (variables.ContainsKey(variableName))
+                    {
+                        literalName = new Literal()
+                        {
+                            CnfIndex = variables[variableName],
+                            Sign = sign
+                        };
+                    }
+                    else
+                    {
+                        variables[variableName] = ++cnfIndex;
 
-                    // add the clause with its literals in the list
-                    if (LiteralNames.Count > 0)
-                        clausesList.Add(LiteralNames);
+                        literalName = new Literal()
+                        {
+                            CnfIndex = cnfIndex,
+                            Sign = sign
+                        };
+                    }
+
+                    // add the literal to the list
+                    LiteralNames.Add(literalName);
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+
+
+                // add the clause with its literals in the list
+                if (LiteralNames.Count > 0)
+                    clausesList.Add(LiteralNames);
             }
 
             return clausesList;
@@ -379,28 +333,20 @@ namespace SATCalculator
         {
             string formula = "";
 
-            try
+            foreach (var clause in clausesList)
             {
+                if (formula != "")
+                    formula += $" {AndSymbolOriginal} ";
 
-                foreach (var clause in clausesList)
+                formula += "(";
+                foreach (var literal in clause)
                 {
-                    if (formula != "")
-                        formula += $" {AndSymbolOriginal} ";
+                    if (!formula.EndsWith("("))
+                        formula += $" {OrSymbolOriginal} ";
 
-                    formula += "(";
-                    foreach (var literal in clause)
-                    {
-                        if (!formula.EndsWith("("))
-                            formula += $" {OrSymbolOriginal} ";
-
-                        formula += $"{literal.Sign}{Variable.DefaultVariableName}{literal.CnfIndex}";
-                    }
-                    formula += ")";
+                    formula += $"{literal.Sign}{Variable.DefaultVariableName}{literal.CnfIndex}";
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                formula += ")";
             }
 
             return formula;
@@ -414,27 +360,20 @@ namespace SATCalculator
         {
             List<string> lines = new List<string>();
 
-            try
+            foreach (var clause in clausesList)
             {
-                foreach (var clause in clausesList)
+                string line = "";
+
+                foreach (var literal in clause)
                 {
-                    string line = "";
+                    if (line != "")
+                        line += " ";
 
-                    foreach (var literal in clause)
-                    {
-                        if (line != "")
-                            line += " ";
-
-                        string newLiteral = $"{literal.Sign}{literal.CnfIndex}";
-                        line += newLiteral;
-                    }
-                    line += " 0";
-                    lines.Add(line);
+                    string newLiteral = $"{literal.Sign}{literal.CnfIndex}";
+                    line += newLiteral;
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                line += " 0";
+                lines.Add(line);
             }
 
             return lines;
@@ -445,19 +384,12 @@ namespace SATCalculator
         /// </summary>
         private void TestFormula(string formula)
         {
-            try
+            if (FormulaIsValid(formula))
             {
-                if (FormulaIsValid(formula))
-                {
-                    var clausesList = SplitFormula(formula);
-                    var formulaFormatted = ComposeToString(clausesList);
+                var clausesList = SplitFormula(formula);
+                var formulaFormatted = ComposeToString(clausesList);
 
-                    ResultFormulaString = formulaFormatted;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                ResultFormulaString = formulaFormatted;
             }
         }
 
@@ -470,17 +402,10 @@ namespace SATCalculator
         {
             List<string> lines = new List<string>();
 
-            try
+            if (FormulaIsValid(formula))
             {
-                if (FormulaIsValid(formula))
-                {
-                    var clausesList = SplitFormula(formula);
-                    lines = ComposeToCnfLines(clausesList);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                var clausesList = SplitFormula(formula);
+                lines = ComposeToCnfLines(clausesList);
             }
 
             return lines;

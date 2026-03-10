@@ -74,19 +74,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Classes\Commands.cs" />
-    <Compile Include="Classes\Converters.cs" />
-    <Compile Include="Classes\Logs.cs" />
-    <Compile Include="Classes\Solution.cs" />
-    <Compile Include="Classes\SolverDeterministic.cs" />
-    <Compile Include="Views\AboutWindow.xaml.cs">
-      <DependentUpon>AboutWindow.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Core\Commands.cs" />
+    <Compile Include="Core\Converters.cs" />
+    <Compile Include="Core\FileHelper.cs" />
+    <Compile Include="Models\FormulaSolution.cs" />
+    <Compile Include="Core\SolverDeterministic.cs" />
+    <Compile Include="Core\VariableValue.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NewClauseWindow.xaml.cs">
-      <DependentUpon>NewClauseWindow.xaml</DependentUpon>
+    <Compile Include="Views\ClauseEditorWindow.xaml.cs">
+      <DependentUpon>ClauseEditorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\NewFormulaWindow.xaml.cs">
       <DependentUpon>NewFormulaWindow.xaml</DependentUpon>
@@ -107,15 +105,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\AboutWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\NewClauseWindow.xaml">
+    <Page Include="Views\ClauseEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -125,11 +119,11 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\Clause.cs" />
-    <Compile Include="Classes\Enums.cs" />
-    <Compile Include="Classes\Literal.cs" />
-    <Compile Include="Classes\SATFormula.cs" />
-    <Compile Include="Classes\Variable.cs" />
+    <Compile Include="Models\Clause.cs" />
+    <Compile Include="Core\Enums.cs" />
+    <Compile Include="Models\Literal.cs" />
+    <Compile Include="Models\SATFormula.cs" />
+    <Compile Include="Models\Variable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

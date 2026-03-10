@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
-namespace SATCalculator.Classes
+namespace SATCalculator.Core
 {
     public class Commands
     {
@@ -18,6 +13,12 @@ namespace SATCalculator.Classes
         public static readonly RoutedUICommand Add = new RoutedUICommand(
             "add",
             "add",
+            typeof(Commands)
+        );
+
+        public static readonly RoutedUICommand Edit = new RoutedUICommand(
+            "edit",
+            "edit",
             typeof(Commands)
         );
 

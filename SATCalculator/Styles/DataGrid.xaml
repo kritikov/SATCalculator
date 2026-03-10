@@ -15,6 +15,30 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+
+            <!-- selected AND grid has focus -->
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSelected" Value="True"/>
+                    <Condition Property="Selector.IsSelectionActive" Value="True"/>
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" Value="#4FA3FF"/>
+                <Setter Property="Foreground" Value="White"/>
+            </MultiTrigger>
+
+            <!-- selected BUT grid has NO focus -->
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSelected" Value="True"/>
+                    <Condition Property="Selector.IsSelectionActive" Value="False"/>
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" Value="#C5E0E6"/>
+                <Setter Property="Foreground" Value="Black"/>
+            </MultiTrigger>
+
+        </Style.Triggers>
+
     </Style>
     <Style TargetType="DataGrid" x:Key="DataGridStyle" BasedOn="{StaticResource {x:Type DataGrid}}">
         <Setter Property="AutoGenerateColumns" Value="False"/>
@@ -35,35 +59,6 @@
                 <Setter Property="Foreground" Value="Brown" />
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="Padding" Value="10, 10, 10, 10"/>
-            </Style>
-        </Style.Resources>
-    </Style>
-
-
-    <Style TargetType="DataGridCell" x:Key="DataGridCellFromDataTableStyle" BasedOn="{StaticResource {x:Type DataGridCell}}">
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-        <!--<Style.Triggers>
-            <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="Red"/>
-                <Setter Property="Foreground" Value="White"/>
-            </Trigger>
-        </Style.Triggers>-->
-    </Style>
-    <Style TargetType="DataGrid" x:Key="DataGridFromDataTableStyle" BasedOn="{StaticResource {x:Type DataGrid}}">
-        <Setter Property="AutoGenerateColumns" Value="True"/>
-        <Setter Property="CanUserAddRows" Value="False"/>
-        <Setter Property="IsSynchronizedWithCurrentItem" Value="True"/>
-        <Setter Property="SelectionUnit" Value="Cell"/>
-        <Setter Property="SelectionMode" Value="Extended"/>
-        <Setter Property="HeadersVisibility" Value="Column"/>
-        <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="CellStyle" Value="{StaticResource DataGridCellFromDataTableStyle}"/>
-        <Style.Resources>
-            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
             </Style>
         </Style.Resources>
     </Style>
