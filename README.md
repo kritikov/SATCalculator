@@ -1,5 +1,5 @@
 # SATCalculator
-SAT calculator is an open souce editor for SAT formulas. It currently provides:
+SAT calculator is a simple and open souce editor for SAT formulas. It currently provides:
 
 - Create and edit SAT formulas: Add variables, literals, and clauses with a real-time visual representation.
 - Compute solutions dynamically: Calculate all possible variable valuations and highlight those that satisfy the formula.
